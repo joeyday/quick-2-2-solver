@@ -2,7 +2,7 @@ import re
 
 def move (c, m, inverse=False):
     face = m[0]
-    count = int(m[1])
+    count = int(3 if m[1] == "'" else m[1]) if len(m) > 1 else 1
     
     if inverse == True and count != 2:
         count = 3 if (count + 2) % 3 == 0 else (count + 2) % 3
@@ -74,20 +74,17 @@ p1 = build_table([(0,0), (0,0), (0,0), (0,0), (0,0), (0,0), (0,0)], ['U1', 'U2',
 p2 = build_table([(0,0), (1,0), (2,0), (3,0), (4,0), (5,0), (6,0)], ['U1', 'U2', 'U3', 'F2', 'R2'], 13)
 
 def move_sequence (c, s):
-    s = s.replace("'", '3')
-    s = re.sub(r'([RUF])\b', r'\g<1>1', s)
-    for current_move in s.split(' '):
+    for current_move in s:
         c = move(c, current_move)
     return c
 
 scramble_sequence = "R2 F U R2 U' R U2 F' R"
 print(scramble_sequence)
 scramble = [(0,0), (1,0), (2,0), (3,0), (4,0), (5,0), (6,0)]
-scramble = move_sequence(scramble, scramble_sequence) # scramble the cube
+scramble = move_sequence(scramble, scramble_sequence.split(' ')) # scramble the cube
 
 # print(p0[str(scramble)]) # look up optimal solution
 orientation_scramble = list(map(lambda n: (0, n[1]), scramble))
 print(p1[str(orientation_scramble)]) # look up first phase solution
-for current_move in p1[str(orientation_scramble)]:
-    scramble = move(scramble, current_move) # execute first phase solution on cube
+scramble = move_sequence(scramble, p1[str(orientation_scramble)]) # execute first phase solution on cube
 print(p2[str(scramble)]) # look up second phase solution
