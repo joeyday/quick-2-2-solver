@@ -1,8 +1,11 @@
 import re
 
-def move (c, m):
+def move (c, m, inverse=False):
     face = m[0]
     count = int(m[1])
+    
+    if inverse == True and count != 2:
+        count = 3 if (count + 2) % 3 == 0 else (count + 2) % 3
 
     for i in range(0, count):
         if face == 'R':
@@ -39,22 +42,9 @@ def move (c, m):
             ]
 
     return c
-    
-def move_inverse (c, m):
-    m = m.replace('1', 'x')
-    m = m.replace('3', '1')
-    m = m.replace('x', '3')
-    return move(c, m)
 
-def p1_str (cube):
-    return ''.join("%s" % str(x[1]) for x in cube)
-
-def p2_str (cube):
-    return ''.join("%s" % ''.join(map(str, x)) for x in cube)
-
-def build_table (allowed_moves, str_fn, max_moves):
-    cube = [(0,0), (1,0), (2,0), (3,0), (4,0), (5,0), (6,0)]
-    p = { str_fn(cube): [] }
+def build_table (cube, allowed_moves, max_moves):
+    p = { str(cube): [] }
     pa = [ [ { 'cube': cube, 'sequence': [] } ] ]
     
     for i in range(0, max_moves):
@@ -63,25 +53,25 @@ def build_table (allowed_moves, str_fn, max_moves):
             for current_move in allowed_moves:
                 if len(previous['sequence']) == 0 or previous['sequence'][0] != current_move:
                     current = {
-                        'cube': move_inverse(previous['cube'], current_move),
+                        'cube': move(previous['cube'], current_move, True), # inverse move
                         'sequence': previous['sequence'].copy()
                     }
                     current['sequence'].insert(0, current_move)
-                    if str_fn(current['cube']) not in p:
-                        p[str_fn(current['cube'])] = current['sequence']
+                    if str(current['cube']) not in p:
+                        p[str(current['cube'])] = current['sequence']
                         pa[i + 1].append(current)
     
-    # print(len(p))
-    # lengths = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    # for cube, solution in p.items():
-    #     lengths[len(solution)] += 1
-    # print(lengths)
+    print(len(p))
+    lengths = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    for cube, solution in p.items():
+        lengths[len(solution)] += 1
+    print(lengths)
     
     return p
 
-# p0 = build_table([ 'U1', 'U2', 'U3', 'F1', 'F2', 'F3', 'R1', 'R2', 'R3' ], str, 11) # very slow!
-p1 = build_table([ 'U1', 'U2', 'U3', 'F1', 'F2', 'F3', 'R1', 'R2', 'R3' ], p1_str, 6) # build lookup table for phase 1
-p2 = build_table([ 'U1', 'U2', 'U3', 'F2', 'R2' ], p2_str, 13) # build lookup table for phase 2
+# p0 = build_table([(0,0), (1,0), (2,0), (3,0), (4,0), (5,0), (6,0)], ['U1', 'U2', 'U3', 'F1', 'F2', 'F3', 'R1', 'R2', 'R3'], 11) # very slow!
+p1 = build_table([(0,0), (0,0), (0,0), (0,0), (0,0), (0,0), (0,0)], ['U1', 'U2', 'U3', 'F1', 'F2', 'F3', 'R1', 'R2', 'R3'], 6)
+p2 = build_table([(0,0), (1,0), (2,0), (3,0), (4,0), (5,0), (6,0)], ['U1', 'U2', 'U3', 'F2', 'R2'], 13)
 
 def move_sequence (c, s):
     s = s.replace("'", '3')
@@ -90,13 +80,14 @@ def move_sequence (c, s):
         c = move(c, current_move)
     return c
 
-scramble_sequence = "U2 R2 U R' U2 R' U2 F' R'"
+scramble_sequence = "R2 F U R2 U' R U2 F' R"
 print(scramble_sequence)
 scramble = [(0,0), (1,0), (2,0), (3,0), (4,0), (5,0), (6,0)]
 scramble = move_sequence(scramble, scramble_sequence) # scramble the cube
 
 # print(p0[str(scramble)]) # look up optimal solution
-print(p1[p1_str(scramble)]) # look up first phase solution
-for current_move in p1[p1_str(scramble)]:
-    scramble = move(scramble, current_move) #execute first phase solution on cube
-print(p2[p2_str(scramble)]) # look up second phase solution
+orientation_scramble = list(map(lambda n: (0, n[1]), scramble))
+print(p1[str(orientation_scramble)]) # look up first phase solution
+for current_move in p1[str(orientation_scramble)]:
+    scramble = move(scramble, current_move) # execute first phase solution on cube
+print(p2[str(scramble)]) # look up second phase solution
