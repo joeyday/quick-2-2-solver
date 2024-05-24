@@ -61,11 +61,11 @@ def build_table (cube, allowed_moves, max_moves):
                         p[str(current['cube'])] = current['sequence']
                         pa[i + 1].append(current)
     
-    print(len(p))
-    lengths = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    for cube, solution in p.items():
-        lengths[len(solution)] += 1
-    print(lengths)
+    # print(len(p))
+    # lengths = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    # for cube, solution in p.items():
+    #     lengths[len(solution)] += 1
+    # print(lengths)
     
     return p
 
