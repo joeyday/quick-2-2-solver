@@ -8,11 +8,16 @@
 cube = [(0,0), (1,0), (2,0), (3,0), (4,0), (5,0), (6,0)]
 
 def do_move (cube, move, inverse=False):
+    # Moves can optionally be passed in the forms R, R', R2 or R1, R2, R3;
+    # first figure out which face we are turning
     face = move[0]
+
+    # This is obtuse; uses ternary operators to translate blanks into 1's
+    # and primes into 3's to figure out how many times to turn the face
     turn_count = int(3 if move[1] == "'" else move[1]) if len(move) > 1 else 1
 
     if inverse == True and turn_count != 2:
-        turn_count = 3 if (turn_count + 2) % 3 == 0 else (turn_count + 2) % 3
+        turn_count = 3 if turn_count == 1 else 1
 
     for i in range(0, turn_count):
         if face == 'U':
@@ -111,7 +116,7 @@ phase_2_lookup_table = generate_phase_lookup_table(
 
 # The rest of the code just uses the lookup table to find and print the solution
 # to some scramble; replace this with whatever scramble you'd like to solve :-)
-scramble_sequence = "F' R2 U' R U' F2 R2 F' R"
+scramble_sequence = "F2 U2 F' R F U F' R U"
 scrambled_cube = do_sequence(cube, scramble_sequence.split(' '))
 scrambled_cube_orientation_only = list(map(lambda n: (0, n[1]), scrambled_cube))
 phase_1_solution = phase_1_lookup_table[str(scrambled_cube_orientation_only)]
