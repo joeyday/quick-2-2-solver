@@ -111,6 +111,8 @@ phase_2_lookup_table = generate_phase_lookup_table(
     13
 )
 
+# The rest of the code just uses the lookup table to find and print the solution
+# to some scramble; replace this with whatever scramble you'd like to solve :-)
 scramble_sequence = "R2 F U R2 U' R U2 F' R"
 scrambled_cube = do_sequence(cube, scramble_sequence.split(' '))
 scrambled_cube_orientation_only = list(map(lambda n: (0, n[1]), scrambled_cube))
