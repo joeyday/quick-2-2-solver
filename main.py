@@ -40,11 +40,11 @@ def do_move (cube, move, inverse=False):
         if face == 'R':
             cube = [
                 (cube[0][0], cube[0][1]),
-                (cube[2][0], (cube[1][1] + 1) % 3),
-                (cube[5][0], (cube[1][1] + 2) % 3),
+                (cube[2][0], (cube[2][1] + 1) % 3),
+                (cube[5][0], (cube[5][1] + 2) % 3),
                 (cube[3][0], cube[3][1]),
-                (cube[1][0], (cube[4][1] + 2) % 3),
-                (cube[4][0], (cube[5][1] + 1) % 3),
+                (cube[1][0], (cube[1][1] + 2) % 3),
+                (cube[4][0], (cube[4][1] + 1) % 3),
                 (cube[6][0], cube[6][1])
             ]
 
@@ -121,5 +121,5 @@ scrambled_cube = do_sequence(scrambled_cube, phase_1_solution)
 phase_2_solution = phase_2_lookup_table[str(scrambled_cube)]
 
 print('Scramble: ' + scramble_sequence)
-print('Phase 1: ' + phase_1_solution)
-print('Phase 2: ' + phase_2_solution)
+print('Phase 1: ' + str(phase_1_solution))
+print('Phase 2: ' + str(phase_2_solution))
