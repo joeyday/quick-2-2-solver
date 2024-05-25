@@ -12,8 +12,8 @@ def do_move (cube, move, inverse=False):
     # first figure out which face we are turning
     face = move[0]
 
-    # This is obtuse; uses ternary operators to translate blanks into 1's
-    # and primes into 3's to figure out how many times to turn the face
+    # This is obtuse, but is basically just figuring out how many times to
+    # turn the face (also translates blanks into 1's and primes into 3's)
     turn_count = int(3 if move[1] == "'" else move[1]) if len(move) > 1 else 1
 
     if inverse == True and turn_count != 2:
@@ -21,36 +21,44 @@ def do_move (cube, move, inverse=False):
 
     for i in range(0, turn_count):
         if face == 'U':
+            # Turn the U face by moving UBL, UBR, UFR, and UFL around;
+            # in this case they stay oriented the same way
             cube = [
-                (cube[3][0], cube[3][1]),
-                (cube[0][0], cube[0][1]),
-                (cube[1][0], cube[1][1]),
-                (cube[2][0], cube[2][1]),
-                (cube[4][0], cube[4][1]),
-                (cube[5][0], cube[5][1]),
-                (cube[6][0], cube[6][1])
+                (cube[3][0], cube[3][1]), # UBL
+                (cube[0][0], cube[0][1]), # UBR
+                (cube[1][0], cube[1][1]), # UFR
+                (cube[2][0], cube[2][1]), # UFL
+                (cube[4][0], cube[4][1]), # DBR
+                (cube[5][0], cube[5][1]), # DFR
+                (cube[6][0], cube[6][1]) # DFL
             ]
 
         if face == 'F':
+            # Turn the F face by moving UFR, UFL, DFR, and DFL around;
+            # also twists all the corners since they're all moving from
+            # the U face to the D face or vice versa
             cube = [
-                (cube[0][0], cube[0][1]),
-                (cube[1][0], cube[1][1]),
-                (cube[3][0], (cube[3][1] + 1) % 3),
-                (cube[6][0], (cube[6][1] + 2) % 3),
-                (cube[4][0], cube[4][1]),
-                (cube[2][0], (cube[2][1] + 2) % 3),
-                (cube[5][0], (cube[5][1] + 1) % 3)
+                (cube[0][0], cube[0][1]), # UBL
+                (cube[1][0], cube[1][1]), # UBR
+                (cube[3][0], (cube[3][1] + 1) % 3), # UFR
+                (cube[6][0], (cube[6][1] + 2) % 3), # UFL
+                (cube[4][0], cube[4][1]), # DBR
+                (cube[2][0], (cube[2][1] + 2) % 3), # DFR
+                (cube[5][0], (cube[5][1] + 1) % 3) # DFL
             ]
 
         if face == 'R':
+            # Turn the R face by moving UBR, UFR, DBR, and DFR around;
+            # also twists all the corners since they're all moving from
+            # the U face to the D face or vice versa
             cube = [
-                (cube[0][0], cube[0][1]),
-                (cube[2][0], (cube[2][1] + 1) % 3),
-                (cube[5][0], (cube[5][1] + 2) % 3),
-                (cube[3][0], cube[3][1]),
-                (cube[1][0], (cube[1][1] + 2) % 3),
-                (cube[4][0], (cube[4][1] + 1) % 3),
-                (cube[6][0], cube[6][1])
+                (cube[0][0], cube[0][1]), # UBL
+                (cube[2][0], (cube[2][1] + 1) % 3), # UBR
+                (cube[5][0], (cube[5][1] + 2) % 3), # UFR
+                (cube[3][0], cube[3][1]), # UFL
+                (cube[1][0], (cube[1][1] + 2) % 3), # DBR
+                (cube[4][0], (cube[4][1] + 1) % 3), # DFR
+                (cube[6][0], cube[6][1]) # DFL
             ]
 
     return cube
@@ -116,7 +124,7 @@ phase_2_lookup_table = generate_phase_lookup_table(
 
 # The rest of the code just uses the lookup table to find and print the solution
 # to some scramble; replace this with whatever scramble you'd like to solve :-)
-scramble_sequence = "F2 U2 F' R F U F' R U"
+scramble_sequence = "U' R F R' U R F2 R F2"
 scrambled_cube = do_sequence(cube, scramble_sequence.split(' '))
 scrambled_cube_orientation_only = list(map(lambda n: (0, n[1]), scrambled_cube))
 phase_1_solution = phase_1_lookup_table[str(scrambled_cube_orientation_only)]
