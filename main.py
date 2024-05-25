@@ -1,4 +1,11 @@
-import re
+# The cube itself is represented with a list of tuples; The indices 0–6
+# correspond to the positions UBL, UBR, UFR, UFL, DBR, DFR, DFL; since the
+# only moves are U, F, and R, piece DBL is fixed in place and can neither
+# be permuted nor oriented, so no sense in keeping track of it; the first
+# value in the tuple is which piece is in the position; the second value
+# in the tuple is how the piece is oriented on the U/D axis (0 = oriented,
+# 1 = twisted clockwise, 2 = twisted counter-clockwise)
+cube = [(0,0), (1,0), (2,0), (3,0), (4,0), (5,0), (6,0)]
 
 def do_move (cube, move, inverse=False):
     face = move[0]
@@ -8,17 +15,6 @@ def do_move (cube, move, inverse=False):
         turn_count = 3 if (turn_count + 2) % 3 == 0 else (turn_count + 2) % 3
 
     for i in range(0, turn_count):
-        if face == 'R':
-            cube = [
-                (cube[5][0], (cube[5][1] + 2) % 3),
-                (cube[1][0], cube[1][1]),
-                (cube[2][0], cube[2][1]),
-                (cube[0][0], (cube[0][1] + 1) % 3),
-                (cube[3][0], (cube[3][1] + 2) % 3),
-                (cube[4][0], (cube[4][1] + 1) % 3),
-                (cube[6][0], cube[6][1])
-            ]
-
         if face == 'U':
             cube = [
                 (cube[3][0], cube[3][1]),
@@ -32,49 +28,65 @@ def do_move (cube, move, inverse=False):
 
         if face == 'F':
             cube = [
-                (cube[1][0], (cube[1][1] + 1) % 3),
+                (cube[0][0], cube[0][1]),
+                (cube[1][0], cube[1][1]),
+                (cube[3][0], (cube[3][1] + 1) % 3),
                 (cube[6][0], (cube[6][1] + 2) % 3),
-                (cube[2][0], cube[2][1]),
-                (cube[3][0], cube[3][1]),
                 (cube[4][0], cube[4][1]),
-                (cube[0][0], (cube[0][1] + 2) % 3),
+                (cube[2][0], (cube[2][1] + 2) % 3),
                 (cube[5][0], (cube[5][1] + 1) % 3)
+            ]
+
+        if face == 'R':
+            cube = [
+                (cube[0][0], cube[0][1]),
+                (cube[2][0], (cube[1][1] + 1) % 3),
+                (cube[5][0], (cube[1][1] + 2) % 3),
+                (cube[3][0], cube[3][1]),
+                (cube[1][0], (cube[4][1] + 2) % 3),
+                (cube[4][0], (cube[5][1] + 1) % 3),
+                (cube[6][0], cube[6][1])
             ]
 
     return cube
 
-def do_sequence (c, s):
-    for current_move in s:
-        c = do_move(c, current_move)
-    return c
+def do_sequence (cube, sequence):
+    for move in sequence:
+        cube = do_move(cube, move)
+    return cube
 
 def generate_phase_lookup_table (cube, allowed_moves, max_moves):
-    # This is the phase lookup table returned later: a dictionary where keys are
-    # stringified cube states and values are optimal solution sequences; populated
-    # with the solved cube here at the start
+    # A phase lookup table is a dictionary where the keys are stringified cube states
+    # and values are optimal solution sequences; initialized here with solved cube and
+    # optimal zero-move "solution"
     phase_lookup_table = { str(cube): [] }
 
-    # The helper table is a list of lists; the list at index 0 is all the cubes
-    # reachable in zero moves, the list at index 1 will be all the cubes reachable
+    # The helper table is a list of lists; the list at index 0 is all cube states
+    # reachable in zero moves, the list at index 1 will be all cube states reachable
     # in one move, and so on; this enables breadth-first searching so the first time
-    # we see any given cube position we know we reached it in optimal move count
+    # we see any given cube position we know we reached it in optimal move count;
+    # initialized here with the only cube state reachable in zero moves
     helper_table = [ [ { 'cube': cube, 'sequence': [] } ] ]
 
     for i in range(0, max_moves):
         helper_table.append([])
         
-        # Loop through the positions generated in the previous step, do all allowed
-        # moves from each position to generate new positions with +1 move count
+        # Loop through positions generated in previous step (i.e. positions reachable
+        # in i moves), execute each of the allowed moves from each position to generate
+        # all positions reachable in i + 1 moves
         for previous in helper_table[i]:
             for move in allowed_moves:
-                if len(previous['sequence']) == 0 or previous['sequence'][0] != move:
+                if len(previous['sequence']) == 0 or previous['sequence'][0][0] != move[0]:
                     current = {
                         'cube': do_move(previous['cube'], move, True), # inverse move
                         'sequence': previous['sequence'].copy()
                     }
                     current['sequence'].insert(0, move)
-                    if str(current['cube']) not in phase_lookup_table:
-                        phase_lookup_table[str(current['cube'])] = current['sequence']
+
+                    # only save the position if we haven't seen it before
+                    key = str(current['cube'])
+                    if key not in phase_lookup_table:
+                        phase_lookup_table[key] = current['sequence']
                         helper_table[i + 1].append(current)
 
     return phase_lookup_table
@@ -100,7 +112,6 @@ phase_2_lookup_table = generate_phase_lookup_table(
 )
 
 scramble_sequence = "R2 F U R2 U' R U2 F' R"
-cube = [(0,0), (1,0), (2,0), (3,0), (4,0), (5,0), (6,0)]
 scrambled_cube = do_sequence(cube, scramble_sequence.split(' '))
 scrambled_cube_orientation_only = list(map(lambda n: (0, n[1]), scrambled_cube))
 phase_1_solution = phase_1_lookup_table[str(scrambled_cube_orientation_only)]
