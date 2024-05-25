@@ -100,11 +100,13 @@ phase_2_lookup_table = generate_phase_lookup_table(
 )
 
 scramble_sequence = "R2 F U R2 U' R U2 F' R"
-print('Scramble: ' + scramble_sequence)
 cube = [(0,0), (1,0), (2,0), (3,0), (4,0), (5,0), (6,0)]
 scrambled_cube = do_sequence(cube, scramble_sequence.split(' '))
-
 scrambled_cube_orientation_only = list(map(lambda n: (0, n[1]), scrambled_cube))
-print('Phase 1: ' + phase_1_lookup_table[str(scrambled_cube_orientation_only)])
-scrambled_cube = do_sequence(scrambled_cube, phase_1_lookup_table[str(scrambled_cube_orientation_only)])
-print('Phase 2: ' + phase_2_lookup_table[str(scrambled_cube)])
+phase_1_solution = phase_1_lookup_table[str(scrambled_cube_orientation_only)]
+scrambled_cube = do_sequence(scrambled_cube, phase_1_solution)
+phase_2_solution = phase_2_lookup_table[str(scrambled_cube)]
+
+print('Scramble: ' + scramble_sequence)
+print('Phase 1: ' + phase_1_solution)
+print('Phase 2: ' + phase_2_solution)
