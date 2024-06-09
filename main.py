@@ -19,8 +19,8 @@ def do_move (cube, move, inverse=False):
     if inverse == True and turn_count != 2:
         turn_count = 3 if turn_count == 1 else 1
 
-    for i in range(0, turn_count):
-        if face == 'U':
+    if face == 'U':
+        if turn_count == 1:
             # Turn the U face by moving UBL, UBR, UFR, and UFL around;
             # in this case they stay oriented the same way
             cube = [
@@ -32,8 +32,32 @@ def do_move (cube, move, inverse=False):
                 (cube[5][0], cube[5][1]), # DFR
                 (cube[6][0], cube[6][1]) # DFL
             ]
-
-        if face == 'F':
+        elif turn_count == 2:
+            # Turn the U face by moving UBL, UBR, UFR, and UFL around;
+            # in this case they stay oriented the same way
+            cube = [
+                (cube[2][0], cube[2][1]), # UBL
+                (cube[3][0], cube[3][1]), # UBR
+                (cube[0][0], cube[0][1]), # UFR
+                (cube[1][0], cube[1][1]), # UFL
+                (cube[4][0], cube[4][1]), # DBR
+                (cube[5][0], cube[5][1]), # DFR
+                (cube[6][0], cube[6][1]) # DFL
+            ]
+        else:
+            # Turn the U face by moving UBL, UBR, UFR, and UFL around;
+            # in this case they stay oriented the same way
+            cube = [
+                (cube[1][0], cube[1][1]), # UBL
+                (cube[2][0], cube[2][1]), # UBR
+                (cube[3][0], cube[3][1]), # UFR
+                (cube[0][0], cube[0][1]), # UFL
+                (cube[4][0], cube[4][1]), # DBR
+                (cube[5][0], cube[5][1]), # DFR
+                (cube[6][0], cube[6][1]) # DFL
+            ]
+    elif face == 'F':
+        if turn_count == 1:
             # Turn the F face by moving UFR, UFL, DFR, and DFL around;
             # also twists all the corners since they're all moving from
             # the U face to the D face or vice versa
@@ -46,8 +70,33 @@ def do_move (cube, move, inverse=False):
                 (cube[2][0], (cube[2][1] + 2) % 3), # DFR
                 (cube[5][0], (cube[5][1] + 1) % 3) # DFL
             ]
-
-        if face == 'R':
+        elif turn_count == 2:
+            # Turn the F face by moving UFR, UFL, DFR, and DFL around;
+            # in this case they stay oriented the same way
+            cube = [
+                (cube[0][0], cube[0][1]), # UBL
+                (cube[1][0], cube[1][1]), # UBR
+                (cube[6][0], cube[6][1]), # UFR
+                (cube[5][0], cube[5][1]), # UFL
+                (cube[4][0], cube[4][1]), # DBR
+                (cube[3][0], cube[3][1]), # DFR
+                (cube[2][0], cube[2][1]) # DFL
+            ]
+        else:
+            # Turn the F face by moving UFR, UFL, DFR, and DFL around;
+            # also twists all the corners since they're all moving from
+            # the U face to the D face or vice versa
+            cube = [
+                (cube[0][0], cube[0][1]), # UBL
+                (cube[1][0], cube[1][1]), # UBR
+                (cube[5][0], (cube[5][1] + 1) % 3), # UFR
+                (cube[2][0], (cube[2][1] + 2) % 3), # UFL
+                (cube[4][0], cube[4][1]), # DBR
+                (cube[6][0], (cube[6][1] + 2) % 3), # DFR
+                (cube[3][0], (cube[3][1] + 1) % 3) # DFL
+            ]
+    else:
+        if turn_count == 1:
             # Turn the R face by moving UBR, UFR, DBR, and DFR around;
             # also twists all the corners since they're all moving from
             # the U face to the D face or vice versa
@@ -60,6 +109,32 @@ def do_move (cube, move, inverse=False):
                 (cube[4][0], (cube[4][1] + 1) % 3), # DFR
                 (cube[6][0], cube[6][1]) # DFL
             ]
+        elif turn_count == 2:
+            # Turn the R face by moving UBR, UFR, DBR, and DFR around;
+            # in this case they stay oriented the same way
+            cube = [
+                (cube[0][0], cube[0][1]), # UBL
+                (cube[5][0], cube[5][1]), # UBR
+                (cube[4][0], cube[4][1]), # UFR
+                (cube[3][0], cube[3][1]), # UFL
+                (cube[2][0], cube[2][1]), # DBR
+                (cube[1][0], cube[1][1]), # DFR
+                (cube[6][0], cube[6][1]) # DFL
+            ]
+        else:
+            # Turn the R face by moving UBR, UFR, DBR, and DFR around;
+            # also twists all the corners since they're all moving from
+            # the U face to the D face or vice versa
+            cube = [
+                (cube[0][0], cube[0][1]), # UBL
+                (cube[4][0], (cube[4][1] + 1) % 3), # UBR
+                (cube[1][0], (cube[1][1] + 2) % 3), # UFR
+                (cube[3][0], cube[3][1]), # UFL
+                (cube[5][0], (cube[5][1] + 2) % 3), # DBR
+                (cube[2][0], (cube[2][1] + 1) % 3), # DFR
+                (cube[6][0], cube[6][1]) # DFL
+            ]
+
 
     return cube
 
